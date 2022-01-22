@@ -1,1 +1,43 @@
-hello there
+<!DOCTYPE html>
+
+<html>
+<head>
+<style>
+    #monkey {
+        position: absolute;
+        height: 150px;
+        width: 150px;
+        border-radius: 50%;
+    }
+
+    .hidden {
+        background-color: transparent;
+    }
+
+    body {
+        margin: 0px;
+        background-color: black;
+    }
+</style>
+
+<script type="text/javascript" src="Screensaver.js" defer></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const ss = new Screensaver(document.getElementById("monkey"), {
+            // top: 600,
+            // left: 1200,
+            top: window.innerHeight,
+            left: window.innerWidth,
+        });
+        ss.start();
+    })
+</script>
+</head>
+
+<body>
+    <img id="monkey" class="hidden" src="https://avatars.githubusercontent.com/u/14228585">
+</div>
+</body>
+</html>
+
