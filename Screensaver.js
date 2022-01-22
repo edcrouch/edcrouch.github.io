@@ -1,6 +1,8 @@
 class Screensaver {
     #el;
     #bounds;
+    #collisionZone = 10
+    #duration = 20
     constructor(elem, bounds) {
         this.#el = elem;
         const rect = elem.getBoundingClientRect();
@@ -8,6 +10,11 @@ class Screensaver {
             x: bounds.left - rect.width,
             y: bounds.top - rect.height,
         };
+
+    }
+
+    updateBounds(bounds) {
+        this.#bounds = bounds
     }
 
     async start() {
@@ -26,7 +33,8 @@ class Screensaver {
         while (1) {
             const coll = this.isColliding(pos)
             delta = this.getDelta(delta, coll)
-            pos = await this.moveElement(pos, delta)
+            const cycles = this.getCollisionCycles(pos, delta)
+            pos = await this.moveElement(pos, delta, cycles)
         }
     }
 
@@ -59,32 +67,46 @@ class Screensaver {
             y: 0,
         }
 
-        if (pos.x <= 0 + 10) {
+        if (pos.x <= 0 + this.#collisionZone) {
             coll.x = -1
-        } else if (pos.x >= this.#bounds.x - 10) {
+        } else if (pos.x >= this.#bounds.x - this.#collisionZone) {
             coll.x = 1
         }
 
-        if (pos.y <= 0 + 10) {
+        if (pos.y <= 0 + this.#collisionZone) {
             coll.y = -1
-        } else if (pos.y >= this.#bounds.y - 10) {
+        } else if (pos.y >= this.#bounds.y - this.#collisionZone) {
             coll.y = 1
         }
 
         return coll
     }
 
-    async moveElement(pos, delta) {
+    getCollisionCycles(pos, delta) {
+        const remaining = {
+            x: delta.x > 0
+                ? (this.#bounds.x - this.#collisionZone - pos.x) / delta.x
+                : (pos.x - this.#collisionZone) / Math.abs(delta.x),
+
+            y: delta.y > 0
+                ? (this.#bounds.y - this.#collisionZone - pos.y) / delta.y
+                : (pos.y - this.#collisionZone) / Math.abs(delta.y)
+        }
+
+        return remaining.x < remaining.y ? remaining.x : remaining.y
+    }
+
+    async moveElement(pos, delta, cycles = 1) {
         const newPos = {
-            x: pos.x + delta.x,
-            y: pos.y + delta.y
+            x: pos.x + (delta.x * cycles),
+            y: pos.y + (delta.y * cycles),
         }
 
         const anim = this.#el.animate([
             {top: pos.y + 'px', left: pos.x + 'px'},
             {top: newPos.y + 'px', left: newPos.x + 'px'}
         ], {
-            duration: 15,
+            duration: this.#duration * cycles,
             fill: 'forwards',
         });
 
