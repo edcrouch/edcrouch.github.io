@@ -1,4 +1,4 @@
-class Screen {
+class Screensaver {
     #el;
     #bounds;
     constructor(elem, bounds) {
