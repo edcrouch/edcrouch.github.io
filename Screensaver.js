@@ -26,6 +26,8 @@ class Screensaver {
         let delta = {
             x: 5,
             y: 5
+            // x: this.getRandomInt(1, 10),
+            // y: this.getRandomInt(1, 10)
         }
 
         while (1) {
